@@ -1,45 +1,1306 @@
-<!DOCTYPE html><html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0a1221"><title>Gold Analysis V4 • Demo</title><style>
-:root{color-scheme:dark;--bg:#0a1221;--card:#131f32;--edge:#293850;--muted:#a7b8ce;--text:#f3f7ff;--gold:#f5c66b;--green:#48d4a4;--red:#ff7c87}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}header{padding:22px 17px 13px;background:linear-gradient(145deg,#1c2a43,#0a1221)}.wrap{max-width:960px;margin:auto;padding:0 14px 28px}h1{font-size:24px;margin:0 0 5px}h2{font-size:16px;margin:0 0 12px}.sub,.muted{color:var(--muted)}.sub{font-size:12px}.pill{display:inline-block;border:1px solid #735d33;color:var(--gold);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:700}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{border:1px solid var(--edge);border-radius:16px;background:var(--card);padding:15px;margin-top:12px}.stat{font-size:21px;font-weight:800;margin-top:8px;word-break:break-word}.label{font-size:12px;color:var(--muted)}button,input,select{font:inherit}button{background:var(--gold);color:#1b1a14;border:0;border-radius:10px;padding:11px 14px;font-weight:800;cursor:pointer}button:disabled{opacity:.5}input,select{width:100%;border:1px solid #41516a;border-radius:9px;background:#0d1728;color:white;padding:11px;margin:7px 0 10px}label{font-size:12px;color:var(--muted)}.notice{font-size:12px;line-height:1.6;background:#1a2a3b;padding:11px;border-radius:10px;color:#c8d8e8}.good{color:var(--green)}.bad{color:var(--red)}.neutral{color:var(--gold)}table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px 5px;border-bottom:1px solid var(--edge);text-align:left}th{color:var(--muted)}.tv{height:390px;border-radius:10px;overflow:hidden}.small{font-size:12px;line-height:1.6;color:var(--muted)}details summary{cursor:pointer;font-weight:700}ul{padding-left:20px;line-height:1.8}.full{width:100%}@media(min-width:720px){.grid{grid-template-columns:repeat(4,1fr)}.tv{height:500px}}
-.wrap{max-width:1200px}body{font-weight:600}.card{box-shadow:0 8px 28px #0002}button{transition:filter .2s}button:hover{filter:brightness(1.1)}.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.chip{padding:12px;background:#080d17;border:1px solid #293850;border-radius:8px;font-size:13px}#proChart{height:510px;background:#080b10;border-radius:12px;overflow:hidden}@media(max-width:600px){#proChart{height:440px}.chips{grid-template-columns:repeat(2,1fr)}h1{font-size:20px}.row{flex-wrap:wrap}} </style></head><body><header><div class="wrap"><div class="row"><div><h1>✦ GOLD ANALYSIS V4</h1><div class="sub">XAU/USD • H1 / M15 / M5 • latihan sahaja</div></div><span class="pill">DEMO • NO TRADING</span></div></div></header><main class="wrap"><div class="card"><div class="row"><div><div class="label">Harga terakhir daripada API</div><div class="stat" id="price">Belum tersedia</div><div class="small" id="updated">Sambungkan API untuk analisis automatik</div></div><button id="refresh">Kemas kini</button></div></div><div class="grid"><div class="card"><div class="label">Trend H1</div><div class="stat" id="h1">—</div></div><div class="card"><div class="label">Trend EMA M15</div><div class="stat" id="m15">—</div></div><div class="card"><div class="label">Trend EMA M5</div><div class="stat" id="m5">—</div></div><div class="card"><div class="label">Keputusan latihan</div><div class="stat" id="signal">WAIT</div></div></div><div class="card"><h2>Chart XAUUSD</h2><label>Timeframe chart API</label><select id="chartFrame"><option value="m">M15</option><option value="h">H1</option><option value="f">M5</option></select><div class="row"><button id="resetChart">Reset / Semua candle</button><button id="fullscreen">Skrin penuh</button><label><input type="checkbox" id="showEma" style="width:auto" checked> EMA20 / EMA50</label></div><div class="chips" id="levelChips"><div class="chip">R1 —</div><div class="chip">R2 —</div><div class="chip">S1 —</div><div class="chip">S2 —</div></div><div class="notice" id="ohlc">Sambungkan API untuk memaparkan candle dan empat garisan.</div><div id="proChart"></div><p class="small">Seret untuk bergerak • cubit atau roda tetikus untuk zoom • seret skala harga untuk laras. Paras di luar paparan kekal disenaraikan di atas.</p><details><summary>Graf TradingView asal (rujukan berasingan)</summary><div id="originalChart" style="height:500px"></div><p class="small">Graf asal menggunakan OANDA. Garisan API dan SL/TP dipaparkan pada graf utama di atas; kedua-dua sumber harga boleh berbeza.</p></details><p class="small" id="chartNote">Sambungkan API untuk memaparkan candle sebenar. Tiada data rekaan.</p></div><div class="card"><h2>SL & TP — Perancang simulasi</h2><div class="grid"><div><label>Jenis posisi</label><select id="side"><option value="buy">BUY</option><option value="sell">SELL</option></select></div><div><label>Entry (USD/oz)</label><input id="entry" type="number" step="0.01" placeholder="Contoh: 4020"></div><div><label>SL (USD/oz)</label><input id="sl" type="number" step="0.01" placeholder="Contoh: 4010"></div><div><label>TP1 (USD/oz)</label><input id="tp" type="number" step="0.01" placeholder="Contoh: 4040"></div><div><label>TP2 (USD/oz)</label><input id="tp2" type="number" step="0.01"></div><div><label>Ruang SL tambahan (USD/oz)</label><input id="buffer" type="number" min="0" step="0.01" value="1"></div><div><label>ATR14 M15 × ruang SL minimum</label><input id="atrMult" type="number" min="0" step="0.1" value="0.5"></div><div><label>Modal demo (USD)</label><input id="capital" type="number" min="0" step="0.01" value="100"></div><div><label>Saiz posisi (oz)</label><input id="ounces" type="number" min="0" step="0.01" value="1"></div></div><button class="full" id="autoPlan">Isi cadangan daripada pivot</button><p class="small">Cadangan berdasarkan arah pilihan sendiri, bukan signal. TP1 dan TP2 ialah dua sasaran alternatif untuk keseluruhan saiz posisi; bukan keuntungan yang boleh ditambah bersama.</p><button class="full" id="calculate">Kira simulasi</button><p id="riskResult" class="notice">Pengiraan menggunakan oz secara langsung, bukan lot. Sahkan saiz kontrak sebenar dengan broker.</p></div><div class="card"><h2>Kawasan utama (daripada candle API)</h2><table><thead><tr><th>Paras</th><th>Harga</th><th>Kaedah</th></tr></thead><tbody id="zones"><tr><td colspan="3">Belum ada data candle.</td></tr></tbody></table><p class="small">Zon dikira daripada swing high/low H1 terkini (pivot 2 candle), bukan paras tepat atau jaminan reversal.</p></div><div class="card"><h2>Penjelasan analisis</h2><div id="explain" class="notice">Tiada signal selagi data API belum berjaya dimuatkan.</div></div><div class="card"><details open><summary>Konfigurasi data automatik</summary><p class="small">Versi ini menggunakan endpoint Twelve Data untuk candle XAU/USD. Dapatkan API key sendiri dan semak sama ada pelan anda menyokong XAU/USD, interval 5min/15min/1h serta akses dari pelayar. Kunci disimpan hanya pada peranti ini, tetapi permintaan dibuat terus dari browser; jangan guna kunci sensitif/berbayar yang tidak selamat didedahkan di browser. Untuk penggunaan serius, gunakan backend proxy.</p><label>Twelve Data API key</label><input id="key" type="password" autocomplete="off" placeholder="Masukkan API key (jangan kongsi)"><div class="row"><button id="save">Simpan pada iPhone ini</button><button id="clear" style="background:#33455e;color:white">Padam kunci</button></div><p id="apiStatus" class="small">API belum disambung.</p><label>Auto refresh</label><select id="interval"><option value="0">Manual sahaja</option><option value="300000">Setiap 5 minit</option><option value="900000">Setiap 15 minit</option></select><p class="small">Auto refresh berfungsi semasa laman terbuka; iPhone boleh menghentikan kemas kini apabila Safari di latar belakang. Tiga timeframe memerlukan beberapa permintaan API dan mungkin melebihi kuota pelan percuma.</p></details></div><p class="small">⚠️ Alat pembelajaran, bukan nasihat kewangan. Tiada sambungan ke akaun HFM/MT5, tiada arahan order, tiada jaminan harga real-time atau ketepatan signal. Spread, slippage dan perubahan volatiliti boleh menyebabkan kerugian.</p><p class="small">Chart utama menggunakan <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts™</a>. Paparan serupa gaya awal; bukan widget Advanced Chart yang sama.</p></main><script>
-'use strict';
-const $=id=>document.getElementById(id);let timer=null;
-let market=null,plan=null,lc=null,series=null,ema20Series=null,ema50Series=null,priceLines=[],chartDataKey="",busy=false;
-$('key').value=localStorage.getItem('gold_api_key')||'';$('interval').value=localStorage.getItem('gold_interval')||'0';
-$('save').onclick=()=>{localStorage.setItem('gold_api_key',$('key').value.trim());$('apiStatus').textContent='Kunci disimpan dalam browser ini. Tekan Kemas kini.'};$('clear').onclick=()=>{localStorage.removeItem('gold_api_key');$('key').value='';$('apiStatus').textContent='Kunci dipadam.'};
-$('interval').onchange=()=>{localStorage.setItem('gold_interval',$('interval').value);schedule()};
-function schedule(){if(timer)clearInterval(timer);let ms=Number($('interval').value);if(ms)timer=setInterval(refresh,ms)}schedule();
-async function candles(interval){const key=$('key').value.trim();if(!key)throw Error('Masukkan API key dahulu.');const url='https://api.twelvedata.com/time_series?'+new URLSearchParams({symbol:'XAU/USD',interval,outputsize:'120',apikey:key,format:'JSON',timezone:'Asia/Kuala_Lumpur'});const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(20000)});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();if(d.status==='error'||!Array.isArray(d.values))throw Error(d.message||'API tidak memberikan candle. Semak akses pelan dan kuota.');const rows=d.values.map(x=>({t:x.datetime,o:+x.open,h:+x.high,l:+x.low,c:+x.close})).filter(x=>[x.o,x.h,x.l,x.c].every(v=>Number.isFinite(v)&&v>0)&&x.h>=Math.max(x.o,x.c)&&x.l<=Math.min(x.o,x.c)&&x.h>=x.l).sort((a,b)=>a.t.localeCompare(b.t)).filter((x,i,a)=>i===0||x.t!==a[i-1].t);if(rows.length<35)throw Error('Candle tidak mencukupi untuk analisis '+interval);const seconds={'1h':3600,'15min':900,'5min':300}[interval];const closed=rows.filter(x=>Date.parse(x.t.replace(' ','T')+'+08:00')+seconds*1000<=Date.now());if(closed.length<50)throw Error('Perlu sekurang-kurangnya 50 candle tertutup untuk '+interval);const age=Date.now()-(Date.parse(closed.at(-1).t.replace(' ','T')+'+08:00')+seconds*1000);if(age>seconds*2000)throw Error('Data '+interval+' terlalu lama. Pasaran mungkin tutup atau suapan tertangguh. Cadangan disekat.');return closed}
-function ema(values,n){let a=2/(n+1),e=values[0];for(let i=1;i<values.length;i++)e=a*values[i]+(1-a)*e;return e}
-function structure(c){const closes=c.map(x=>x.c),last=closes.at(-1),e20=ema(closes,20),e50=ema(closes,50);return {last,e20,e50,trend:last>e20&&e20>e50?'BULLISH':last<e20&&e20<e50?'BEARISH':'MIXED'}}
-function pivots(rows){let highs=[],lows=[];for(let i=2;i<rows.length-2;i++){if(rows.slice(i-2,i+3).every((x,j)=>j===2||rows[i].h>x.h))highs.push(rows[i].h);if(rows.slice(i-2,i+3).every((x,j)=>j===2||rows[i].l<x.l))lows.push(rows[i].l)}return {highs,lows}}
-function levels(rows,price){const p=pivots(rows);const res=[...new Set(p.highs)].filter(x=>x>price).sort((a,b)=>a-b).slice(0,2);const sup=[...new Set(p.lows)].filter(x=>x<price).sort((a,b)=>b-a).slice(0,2);return {res,sup}}
-async function refresh(){if(busy)return;busy=true;plan=null;drawChart();$('riskResult').textContent='Data sedang dikemas kini; kira semula pelan selepas selesai.'; $('refresh').disabled=true;$('apiStatus').textContent='Mengambil candle H1, M15 dan M5...';try{const [h,m,f]=await Promise.all([candles('1h'),candles('15min'),candles('5min')]);const H=structure(h),M=structure(m),F=structure(f),price=M.last,L=levels(h,price);market={h,m,f,L,price,loadedAt:Date.now()};plan=null;drawChart();$('price').textContent=price.toFixed(2);$('updated').textContent='Candle M15 terakhir: '+m.at(-1).t+' (candle tertutup, UTC+8)';for(const [id,x] of [['h1',H],['m15',M],['m5',F]]){$(id).textContent=x.trend;$(id).className='stat '+(x.trend==='BULLISH'?'good':x.trend==='BEARISH'?'bad':'neutral')}
-const prev=m.at(-2),oldLevels=levels(h.slice(0,-2),prev.c),r=oldLevels.res[0],s=oldLevels.sup[0];let signal='WAIT',reason='Trend bercampur atau tiada pengesahan yang mencukupi.';if(H.trend==='BULLISH'&&M.trend==='BULLISH'&&F.trend==='BULLISH'){reason='Ketiga-tiga timeframe bullish. Tunggu pullback/retest yang disahkan; ini bukan arahan BUY.'}else if(H.trend==='BEARISH'&&M.trend==='BEARISH'&&F.trend==='BEARISH'){reason='Ketiga-tiga timeframe bearish. Tunggu rejection/retest yang disahkan; ini bukan arahan SELL.'}
-if(r&&prev.c<=r&&price>r)reason+=' Harga melebihi resistance pivot terdahulu; semak breakout pada candle yang sudah tutup.';if(s&&prev.c>=s&&price<s)reason+=' Harga di bawah support pivot terdahulu; semak breakdown pada candle yang sudah tutup.';
-$('signal').textContent=signal;$('explain').textContent=reason+' Analisis EMA20/EMA50 ialah petunjuk trend, bukan ramalan. Hanya candle tertutup digunakan.';
-let data=[...L.res.map((x,i)=>['Resistance '+(i+1),x,'Swing high H1']),...L.sup.map((x,i)=>['Support '+(i+1),x,'Swing low H1'])];$('zones').innerHTML=data.length?data.map(x=>`<tr><td>${x[0]}</td><td>${x[1].toFixed(2)}</td><td>${x[2]}</td></tr>`).join(''):'<tr><td colspan="3">Tiada pivot berhampiran dalam sejarah yang diambil.</td></tr>';$('apiStatus').textContent='Berjaya dimuatkan. Data tidak semestinya sama dengan broker HFM.';
-}catch(e){market=null;plan=null;drawChart();$('apiStatus').textContent='Gagal: '+e.message;$('explain').textContent='Analisis tidak tersedia: '+e.message;$('signal').textContent='WAIT';$('price').textContent='Tidak tersedia';$('updated').textContent='Data belum sah';for(const id of ['h1','m15','m5'])$(id).textContent='—';$('zones').innerHTML='<tr><td colspan="3">Tiada data candle sah.</td></tr>'}finally{busy=false;$('refresh').disabled=false}}
-$('refresh').onclick=refresh;
-function stamp(t){return Date.parse(t.replace(' ','T')+'+08:00')/1000}
-function atr(rows,n=14){const a=rows.slice(-n);return a.reduce((sum,c,i)=>{const ix=rows.indexOf(c),prev=rows[Math.max(0,ix-1)].c;return sum+Math.max(c.h-c.l,Math.abs(c.h-prev),Math.abs(c.l-prev))},0)/a.length}
-function emaPoints(rows,n){let e=rows[0].c;return rows.map(c=>{e=(2/(n+1))*c.c+(1-2/(n+1))*e;return {time:stamp(c.t),value:e}})}
-function initChart(){if(!window.LightweightCharts){$('chartNote').textContent='Pustaka graf belum dimuatkan. Semak internet dan refresh. Analisis dan kalkulator masih boleh digunakan.';return false}if(lc)return true;
-const L=LightweightCharts;lc=L.createChart($('proChart'),{autoSize:true,height:510,layout:{background:{type:'solid',color:'#080b10'},textColor:'#bec8d5',attributionLogo:true},grid:{vertLines:{color:'#ffffff08'},horzLines:{color:'#ffffff12'}},rightPriceScale:{borderColor:'#293850',scaleMargins:{top:.12,bottom:.12}},timeScale:{timeVisible:true,secondsVisible:false,borderColor:'#293850'},localization:{priceFormatter:v=>v.toFixed(2),timeFormatter:t=>new Date(t*1000).toLocaleString('en-GB',{timeZone:'Asia/Kuala_Lumpur',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})},crosshair:{mode:0}});
-series=lc.addSeries(L.CandlestickSeries,{upColor:'#00b69b',downColor:'#ef4054',borderVisible:false,wickUpColor:'#00b69b',wickDownColor:'#ef4054'});ema20Series=lc.addSeries(L.LineSeries,{color:'#e8bc63',lineWidth:1,priceLineVisible:false,lastValueVisible:false});ema50Series=lc.addSeries(L.LineSeries,{color:'#70a5ff',lineWidth:1,priceLineVisible:false,lastValueVisible:false});lc.subscribeCrosshairMove(p=>{if(!p.time||!market)return;const d=p.seriesData.get(series);if(d)$('ohlc').textContent=new Date(p.time*1000).toLocaleString('en-GB',{timeZone:'Asia/Kuala_Lumpur'})+' • O '+d.open.toFixed(2)+' H '+d.high.toFixed(2)+' L '+d.low.toFixed(2)+' C '+d.close.toFixed(2)});return true}
-function drawChart(){if(!initChart())return;for(const l of priceLines)series.removePriceLine(l);priceLines=[];if(!market){series.setData([]);ema20Series.setData([]);ema50Series.setData([]);chartDataKey='';$('levelChips').innerHTML=['R1','R2','S1','S2'].map(x=>'<div class="chip">'+x+' —</div>').join('');return}
-const rows=market[$('chartFrame').value],key=$('chartFrame').value+rows.at(-1).t+rows.at(-1).c;if(key!==chartDataKey){series.setData(rows.map(c=>({time:stamp(c.t),open:c.o,high:c.h,low:c.l,close:c.c})));ema20Series.setData(emaPoints(rows,20));ema50Series.setData(emaPoints(rows,50));if(!chartDataKey)lc.timeScale().fitContent();chartDataKey=key}
-ema20Series.applyOptions({visible:$('showEma').checked});ema50Series.applyOptions({visible:$('showEma').checked});const lines=[...market.L.res.map((v,i)=>({v,label:'R'+(i+1),color:'#ff687a'})),...market.L.sup.map((v,i)=>({v,label:'S'+(i+1),color:'#00cfac'}))];$('levelChips').innerHTML=['R1','R2','S1','S2'].map(name=>{const x=lines.find(l=>l.label===name);return '<div class="chip" style="color:'+(x?x.color:'#a7b8ce')+'">'+name+' <strong>'+(x?x.v.toFixed(2):'Tiada pivot')+'</strong></div>'}).join('');if(plan)lines.push({v:plan.entry,label:'ENTRY',color:'#f5c66b'},{v:plan.sl,label:'SL',color:'#ff5672'},{v:plan.tp,label:'TP1',color:'#65b7ff'},{v:plan.tp2,label:'TP2',color:'#b49aff'});for(const l of lines)priceLines.push(series.createPriceLine({price:l.v,color:l.color,lineWidth:1,lineStyle:l.label.endsWith('2')?2:0,axisLabelVisible:true,title:l.label}));$('chartNote').textContent='Twelve Data • candle tertutup • UTC+8 • R/S pivot H1 • tiada jaminan ketepatan. Garisan boleh berada di luar skala; seret skala harga untuk lihat.';
-}
-$('chartFrame').onchange=()=>{chartDataKey='';drawChart()};$('showEma').onchange=drawChart;$('resetChart').onclick=()=>{if(lc){lc.priceScale('right').applyOptions({autoScale:true});lc.timeScale().fitContent()}};$('fullscreen').onclick=()=>{const el=$('proChart');if(el.requestFullscreen)el.requestFullscreen();else $('chartNote').textContent='Untuk paparan lebih besar pada iPhone, putar telefon melintang.'};
-const loader=document.createElement('script');loader.src='https://unpkg.com/lightweight-charts@5.0.8/dist/lightweight-charts.standalone.production.js';loader.onload=drawChart;loader.onerror=()=>$('chartNote').textContent='Graf gagal dimuatkan. Semak internet dan refresh.';document.head.appendChild(loader);
-const tv=document.createElement('script');tv.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';tv.async=true;tv.textContent=JSON.stringify({autosize:true,symbol:'OANDA:XAUUSD',interval:'15',timezone:'Asia/Kuala_Lumpur',theme:'dark',style:'1',locale:'en',allow_symbol_change:false,hide_top_toolbar:false,support_host:'https://www.tradingview.com'});$('originalChart').innerHTML='<div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div></div>';$('originalChart').firstChild.appendChild(tv);
-setInterval(()=>{if(market&&Date.now()-market.loadedAt>15*60*1000){market=null;plan=null;drawChart();$('signal').textContent='WAIT';$('price').textContent='Data tamat tempoh';for(const id of ['h1','m15','m5'])$(id).textContent='—';$('explain').textContent='Lebih 15 minit tanpa kemas kini berjaya. Muat semula data untuk analisis.';$('zones').innerHTML='<tr><td colspan="3">Kemas kini data diperlukan.</td></tr>'}},30000);
-$('autoPlan').onclick=()=>{if(!market||busy){$('riskResult').textContent='Muatkan data API dahulu.';return}const side=$('side').value,entry=Number($('entry').value)||market.price,buffer=Math.max(Number($('buffer').value),atr(market.m)*Number($('atrMult').value));if(!(entry>0)||!Number.isFinite(buffer)||buffer<0){$('riskResult').textContent='Entry atau ruang SL tidak sah.';return}const L=levels(market.h,entry),targets=side==='buy'?L.res:L.sup,stop=side==='buy'?L.sup[0]:L.res[0];if(!stop||targets.length<2){plan=null;drawChart();$('riskResult').textContent='Pivot belum mencukupi untuk SL dan dua TP. Tiada paras direka.';return} $('entry').value=entry.toFixed(2);$('sl').value=(side==='buy'?stop-buffer:stop+buffer).toFixed(2);$('tp').value=targets[0].toFixed(2);$('tp2').value=targets[1].toFixed(2);calculate()};
-function calculate(){plan=null;const side=$('side').value,entry=+$('entry').value,sl=+$('sl').value,tp=+$('tp').value,tp2=+$('tp2').value,cap=+$('capital').value,oz=+$('ounces').value;
-if(![entry,sl,tp,tp2,cap,oz].every(x=>Number.isFinite(x)&&x>0)){drawChart();$('riskResult').textContent='Isi entry, SL, TP1, TP2, modal dan oz dengan nombor positif.';return}
-if(!(side==='buy'?(sl<entry&&entry<tp&&tp<tp2):(sl>entry&&entry>tp&&tp>tp2))){drawChart();$('riskResult').textContent='BUY: SL < entry < TP1 < TP2. SELL: SL > entry > TP1 > TP2.';return}
-plan={entry,sl,tp,tp2};drawChart();const risk=Math.abs(entry-sl)*oz,reward=Math.abs(tp-entry)*oz,reward2=Math.abs(tp2-entry)*oz,pct=risk/cap*100;
-$('riskResult').textContent=`Risiko USD ${risk.toFixed(2)} (${pct.toFixed(2)}% modal). TP1: USD ${reward.toFixed(2)}, RR 1:${(reward/risk).toFixed(2)}. TP2: USD ${reward2.toFixed(2)}, RR 1:${(reward2/risk).toFixed(2)}. Sasaran alternatif, bukan jumlah keuntungan. ${pct>1?'Risiko melebihi 1% modal. ':''}Anggaran sebelum spread, komisen, swap dan slippage. SL tidak menjamin harga pelaksanaan.`;
-}
-$('calculate').onclick=calculate;for(const id of ['side','entry','sl','tp','tp2','capital','ounces','buffer','atrMult'])$(id).addEventListener('input',()=>{plan=null;drawChart();$('riskResult').textContent='Nilai berubah. Tekan Kira simulasi untuk sahkan semula.'});
-</script></body></html>
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a1221">
+    <title>Gold Analysis V5.1 • Terminal XAU/USD</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles & Theme Overrides -->
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg-dark: #0a1221;
+            --card-dark: #131f32;
+            --border-dark: #1f2d45;
+            --gold-primary: #f5c66b;
+            --emerald-accent: #48d4a4;
+            --rose-accent: #ff7c87;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f3f7ff;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a1221;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2d45;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2a3d5c;
+        }
+
+        /* Glassmorphism & Cards */
+        .fx-card {
+            background-color: var(--card-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .fx-card-interactive {
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .fx-card-interactive:hover {
+            border-color: rgba(245, 198, 107, 0.4);
+        }
+
+        /* Pulsing Status Dot */
+        .pulse-green {
+            box-shadow: 0 0 0 0 rgba(72, 212, 164, 0.7);
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(72, 212, 164, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(72, 212, 164, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(72, 212, 164, 0); }
+        }
+
+        .pulse-amber {
+            box-shadow: 0 0 0 0 rgba(245, 198, 107, 0.7);
+            animation: pulse-amber 2s infinite;
+        }
+        @keyframes pulse-amber {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 198, 107, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(245, 198, 107, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 198, 107, 0); }
+        }
+
+        /* Range sliders & custom inputs */
+        input[type="number"], input[type="text"], input[type="password"], select {
+            background-color: #0d1728;
+            border: 1px solid #23344e;
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 2px rgba(245, 198, 107, 0.15);
+        }
+
+        /* Tabs transition */
+        .tab-btn.active {
+            background-color: var(--gold-primary);
+            color: #0a1221;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-400 selection:text-slate-900">
+
+    <!-- Top Navigation / Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-100">GOLD ANALYSIS V5.1 <span class="text-amber-400">PRO</span></h1>
+                        <span class="bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">XAU/USD Spot</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Terminal Analisis Multi-Timeframe & Perancang Risiko Simulasi</p>
+                </div>
+            </div>
+
+            <!-- Header Quick Stats & Controls -->
+            <div class="flex items-center gap-3 ml-auto sm:ml-0">
+                <div class="hidden md:flex items-center space-x-2 bg-slate-950/60 px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
+                    <span id="apiStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 pulse-amber"></span>
+                    <span id="apiStatusText" class="text-slate-300 font-medium">Belum disambung</span>
+                </div>
+                
+                <button id="btnRefresh" class="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition flex items-center space-x-1.5 active:scale-95">
+                    <i class="fa-solid fa-rotate-right text-sm"></i>
+                    <span>Kemas Kini Data</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 flex-grow w-full space-y-5">
+
+        <!-- Top Volatility & Market Sessions Bar -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- Market Price Card -->
+            <div class="fx-card p-4 flex justify-between items-center relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 text-slate-800/40 text-7xl select-none pointer-events-none">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Penutup M15 Terakhir (XAU/USD)</span>
+                    <div class="flex items-baseline space-x-2 mt-1">
+                        <span id="livePrice" class="text-2xl sm:text-3xl font-black text-slate-100">----.--</span>
+                        <span id="priceChange" class="text-xs font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">--</span>
+                    </div>
+                    <span id="lastUpdatedTime" class="text-[11px] text-slate-500 block mt-1"><i class="fa-regular fa-clock mr-1"></i> Menunggu data...</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-slate-400 block font-medium">ATR 14 (M15)</span>
+                    <span id="atrVal" class="text-lg font-bold text-amber-400">--.-- USD</span>
+                    <span class="text-[10px] text-slate-500 block">Volatiliti Pasaran</span>
+                </div>
+            </div>
+
+            <!-- Market Sessions Status -->
+            <div class="fx-card p-4 flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status Sesi Pasaran Global</span>
+                    <span id="activeSessionBadge" class="text-[10px] bg-slate-800 text-amber-400 font-bold px-2 py-0.5 rounded border border-amber-500/20">Semakan Sesi</span>
+                </div>
+                <div class="grid grid-cols-3 gap-1 text-center my-1">
+                    <div id="sessTokyo" class="bg-slate-950/60 p-1.5 rounded border border-slate-800">
+                        <span class="text-[10px] text-slate-400 block">Tokyo</span>
+                        <span class="status-text text-xs font-bold text-slate-500">Tutup</span>
+                    </div>
+                    <div id="sessLondon" class="bg-slate-950/60 p-1.5 rounded border border-slate-800">
+                        <span class="text-[10px] text-slate-400 block">London</span>
+                        <span class="status-text text-xs font-bold text-slate-500">Tutup</span>
+                    </div>
+                    <div id="sessNY" class="bg-slate-950/60 p-1.5 rounded border border-slate-800">
+                        <span class="text-[10px] text-slate-400 block">New York</span>
+                        <span class="status-text text-xs font-bold text-slate-500">Tutup</span>
+                    </div>
+                </div>
+                <div class="text-[10px] text-slate-500 text-center">Tingkat volatiliti tertinggi berlaku semasa bertindih (Overlap) London & NY.</div>
+            </div>
+
+            <!-- High Impact Macro Alert Guard -->
+            <div class="fx-card p-4 flex flex-col justify-between bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/20 border-amber-500/30">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Amaran Volatiliti Berita
+                    </span>
+                    <span id="newsRiskLevel" class="text-[10px] bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/30">BELUM DISEMAK</span>
+                </div>
+                <p id="newsAlertMessage" class="text-xs text-slate-300 my-1 leading-relaxed">
+                    Kalendar berita belum disambungkan. Status CPI/NFP/FOMC tidak diketahui; semak sumber kalendar sebelum menilai setup.
+                </p>
+                <div class="text-[10px] text-slate-500 flex justify-between items-center border-t border-slate-800/80 pt-1.5">
+                    <span>Penapis Makro: Belum disambung</span>
+                    <span class="text-amber-400 font-medium"><i class="fa-solid fa-shield-halved mr-1"></i>Kawalan Risiko V5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeframe Matrix & Trade Bias Signal Banner -->
+        <div class="fx-card p-4 sm:p-5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                <div>
+                    <h2 class="text-base font-extrabold text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group text-amber-400"></i> Matriks Trend Multi-Timeframe (D1 • H1 • M15 • M5)
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Penapisan corak aligned EMA 20/50 & Momentum RSI 14 merentasi 4 garis masa</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <span class="text-[11px] text-slate-400 block font-medium">Keputusan Signal Matriks</span>
+                        <span id="mainSignalBadge" class="text-base sm:text-lg font-black px-4 py-1 rounded-xl bg-slate-800 text-amber-400 border border-amber-500/30 inline-block shadow">
+                            MENUNGGU DATA
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 TF Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                <!-- D1 -->
+                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400">D1 (Penapis Utama)</span>
+                        <span id="tfBadgeD1" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">--</span>
+                    </div>
+                    <div class="my-2">
+                        <div id="tfTrendD1" class="text-sm font-black text-slate-200">----</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">EMA: <span id="tfEmaD1" class="text-slate-300">--</span></div>
+                    </div>
+                    <div class="text-[11px] border-t border-slate-800/60 pt-1.5 flex justify-between">
+                        <span class="text-slate-500">RSI 14:</span>
+                        <span id="tfRsiD1" class="font-bold text-slate-300">--</span>
+                    </div>
+                </div>
+
+                <!-- H1 -->
+                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400">H1 (Struktur Pasaran)</span>
+                        <span id="tfBadgeH1" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">--</span>
+                    </div>
+                    <div class="my-2">
+                        <div id="tfTrendH1" class="text-sm font-black text-slate-200">----</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">EMA: <span id="tfEmaH1" class="text-slate-300">--</span></div>
+                    </div>
+                    <div class="text-[11px] border-t border-slate-800/60 pt-1.5 flex justify-between">
+                        <span class="text-slate-500">RSI 14:</span>
+                        <span id="tfRsiH1" class="font-bold text-slate-300">--</span>
+                    </div>
+                </div>
+
+                <!-- M15 -->
+                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400">M15 (Zon Setup)</span>
+                        <span id="tfBadgeM15" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">--</span>
+                    </div>
+                    <div class="my-2">
+                        <div id="tfTrendM15" class="text-sm font-black text-slate-200">----</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">EMA: <span id="tfEmaM15" class="text-slate-300">--</span></div>
+                    </div>
+                    <div class="text-[11px] border-t border-slate-800/60 pt-1.5 flex justify-between">
+                        <span class="text-slate-500">RSI 14:</span>
+                        <span id="tfRsiM15" class="font-bold text-slate-300">--</span>
+                    </div>
+                </div>
+
+                <!-- M5 -->
+                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400">M5 (Pengesahan Entry)</span>
+                        <span id="tfBadgeM5" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">--</span>
+                    </div>
+                    <div class="my-2">
+                        <div id="tfTrendM5" class="text-sm font-black text-slate-200">----</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">EMA: <span id="tfEmaM5" class="text-slate-300">--</span></div>
+                    </div>
+                    <div class="text-[11px] border-t border-slate-800/60 pt-1.5 flex justify-between">
+                        <span class="text-slate-500">RSI 14:</span>
+                        <span id="tfRsiM5" class="font-bold text-slate-300">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Rationale Notice Box -->
+            <div id="signalExplanationBox" class="mt-4 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 leading-relaxed flex items-start gap-2.5">
+                <i class="fa-solid fa-circle-info text-amber-400 text-sm mt-0.5 flex-shrink-0"></i>
+                <div id="signalExplanationText">
+                    Sistem sedang menganalisis data pergerakan emas. Sila pastikan sambungan API dikonfigurasi atau masukkan API key yang sah.
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Interactive Chart Section -->
+        <div class="fx-card p-4 sm:p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div>
+                    <h2 class="text-base font-extrabold text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-candlestick text-amber-400"></i> Carta Interaktif XAU/USD (Lightweight Charts 4.2)
+                    </h2>
+                    <p class="text-xs text-slate-400">Memaparkan OHLC Candlestick, EMA20/50, Paras Pivot S&R, dan Penanda Pelan Dagangan</p>
+                </div>
+
+                <!-- Timeframe Selectors & Toggles -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+                        <button class="tf-btn px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-white transition" data-tf="5min">M5</button>
+                        <button class="tf-btn px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-white transition active bg-amber-500 text-slate-950 font-bold" data-tf="15min">M15</button>
+                        <button class="tf-btn px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-white transition" data-tf="1h">H1</button>
+                        <button class="tf-btn px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-white transition" data-tf="1day">D1</button>
+                    </div>
+
+                    <label class="inline-flex items-center gap-1.5 text-xs text-slate-300 bg-slate-950/80 px-2.5 py-1.5 rounded-lg border border-slate-800 cursor-pointer">
+                        <input type="checkbox" id="chkEma" checked class="rounded border-slate-700 text-amber-500 focus:ring-0">
+                        <span>EMA 20/50</span>
+                    </label>
+
+                    <button id="btnResetChart" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-slate-700 transition">
+                        <i class="fa-solid fa-compress mr-1"></i> Reset Zoom
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Pivot Badges (R2, R1, S1, S2 + Psychological) -->
+            <div id="pivotChips" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-3">
+                <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[10px] text-slate-500 block">R2 (Swing High)</span>
+                    <span id="chipR2" class="text-xs font-extrabold text-rose-400">----.--</span>
+                </div>
+                <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[10px] text-slate-500 block">R1 (Swing High)</span>
+                    <span id="chipR1" class="text-xs font-extrabold text-rose-400">----.--</span>
+                </div>
+                <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[10px] text-slate-500 block">S1 (Swing Low)</span>
+                    <span id="chipS1" class="text-xs font-extrabold text-emerald-400">----.--</span>
+                </div>
+                <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[10px] text-slate-500 block">S2 (Swing Low)</span>
+                    <span id="chipS2" class="text-xs font-extrabold text-emerald-400">----.--</span>
+                </div>
+                <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[10px] text-slate-500 block">Psikologi .00</span>
+                    <span id="chipPsych00" class="text-xs font-bold text-amber-300">----.--</span>
+                </div>
+                <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[10px] text-slate-500 block">Psikologi .50</span>
+                    <span id="chipPsych50" class="text-xs font-bold text-amber-300">----.--</span>
+                </div>
+            </div>
+
+            <!-- Main Candlestick Chart Container -->
+            <div class="relative w-full rounded-xl overflow-hidden bg-slate-950 border border-slate-800" style="min-height: 440px;">
+                <div id="mainChartDiv" class="w-full h-[380px] sm:h-[440px]"></div>
+                
+                <!-- Crosshair Info Overlay -->
+                <div id="chartOhlcOverlay" class="absolute top-2 left-3 bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-md border border-slate-800 text-[11px] font-mono text-slate-300 pointer-events-none z-10 flex flex-wrap gap-x-3 gap-y-1">
+                    <span>XAU/USD</span>
+                    <span>O: <span id="ohlcO" class="text-white">----.--</span></span>
+                    <span>H: <span id="ohlcH" class="text-emerald-400">----.--</span></span>
+                    <span>L: <span id="ohlcL" class="text-rose-400">----.--</span></span>
+                    <span>C: <span id="ohlcC" class="text-amber-400">----.--</span></span>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-slate-500 mt-2 flex justify-between items-center">
+                <span><i class="fa-solid fa-hand-pointer mr-1"></i> Seret carta untuk bergerak • Roda tetikus/cubit untuk zoom • Seret skala harga vertical untuk laras paksi.</span>
+                <span class="hidden md:inline text-slate-400 font-mono">Candle Tertutup (Closed Prices Only)</span>
+            </p>
+        </div>
+
+        <!-- Risk Calculator & Smart Position Planner Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            
+            <!-- Left: Inputs & Calculator Controls -->
+            <div class="lg:col-span-2 fx-card p-4 sm:p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                        <div>
+                            <h2 class="text-base font-extrabold text-slate-100 flex items-center gap-2">
+                                <i class="fa-solid fa-calculator text-amber-400"></i> Perancang Posisi & Simulasi Risiko V5
+                            </h2>
+                            <p class="text-xs text-slate-400">Pengiraan saiz posisi spesifik kontrak Emas (Standard 100 oz / Lot) & Broker Spread</p>
+                        </div>
+                        <button id="btnAutoFillPlan" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Isi Auto dari Pivot</span>
+                        </button>
+                    </div>
+
+                    <form id="calcForm" onsubmit="return false;" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 mt-4">
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Jenis Posisi</label>
+                            <select id="simSide" class="w-full rounded-xl px-3 py-2 text-xs font-bold">
+                                <option value="buy" class="text-emerald-400 font-bold">BUY (Long)</option>
+                                <option value="sell" class="text-rose-400 font-bold">SELL (Short)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Harga Entry (USD/oz)</label>
+                            <input id="simEntry" type="number" step="0.01" placeholder="Contoh: 2750.00" class="w-full rounded-xl px-3 py-2 text-xs font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Stop Loss (SL)</label>
+                            <input id="simSL" type="number" step="0.01" placeholder="Contoh: 2740.00" class="w-full rounded-xl px-3 py-2 text-xs font-semibold text-rose-400">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Take Profit 1 (TP1)</label>
+                            <input id="simTP1" type="number" step="0.01" placeholder="Contoh: 2765.00" class="w-full rounded-xl px-3 py-2 text-xs font-semibold text-emerald-400">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Take Profit 2 (TP2)</label>
+                            <input id="simTP2" type="number" step="0.01" placeholder="Contoh: 2780.00" class="w-full rounded-xl px-3 py-2 text-xs font-semibold text-emerald-400">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Modal Akaun (USD)</label>
+                            <input id="simCapital" type="number" min="1" step="1" value="1000" class="w-full rounded-xl px-3 py-2 text-xs font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Saiz Dagangan</label>
+                            <div class="flex gap-1">
+                                <input id="simVolume" type="number" min="0.01" step="0.01" value="0.10" class="w-2/3 rounded-xl px-3 py-2 text-xs font-semibold">
+                                <select id="simVolUnit" class="w-1/3 rounded-xl px-1.5 py-2 text-[11px] font-bold">
+                                    <option value="lot">Lot (100oz)</option>
+                                    <option value="oz">Ounces (oz)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Anggaran Kos tambahan (USD)</label>
+                            <label class="block text-xs text-slate-400 mb-1">Saiz kontrak broker (oz / 1 lot)</label><input id="simContract" type="number" min="0.01" step="0.01" value="100" class="w-full rounded-xl px-3 py-2 text-xs"><p class="text-xs text-amber-300 my-2">100 ialah andaian. Sahkan spesifikasi broker. Kos tambahan USD/oz ditambah kepada risiko dan ditolak daripada ganjaran; jangan kira spread dua kali jika entry sudah harga pelaksanaan.</p>
+                            <input id="simSpread" type="number" min="0" step="0.01" value="0.30" placeholder="0.30" class="w-full rounded-xl px-3 py-2 text-xs font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 block mb-1">Buffer SL (Pengali ATR)</label>
+                            <input id="simAtrBuffer" type="number" min="0" step="0.1" value="0.5" class="w-full rounded-xl px-3 py-2 text-xs font-semibold">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="mt-5 pt-3 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <span class="text-[11px] text-slate-400">Nota: Pengiraan merangkumi perbezaan spread broker untuk mengelakkan *early stopout*.</span>
+                    <button id="btnCalculateRisk" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95">
+                        Kira Simulasi & Plot Pada Carta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Results & Risk Assessment Panel -->
+            <div class="fx-card p-4 sm:p-5 flex flex-col justify-between bg-gradient-to-b from-slate-900 to-slate-950">
+                <div>
+                    <h3 class="text-sm font-extrabold text-slate-200 border-b border-slate-800 pb-2.5 flex items-center justify-between">
+                        <span>Laporan Analisis Risiko</span>
+                        <span id="riskBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-bold">SELAMAT</span>
+                    </h3>
+
+                    <div class="space-y-3 mt-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Jumlah Risiko Dolar:</span>
+                            <span id="resRiskUsd" class="font-extrabold text-rose-400 text-sm">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Peratusan Modal Terancam:</span>
+                            <span id="resRiskPct" class="font-extrabold text-slate-200">0.00%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden my-1">
+                            <div id="riskProgressBar" class="bg-emerald-400 h-full w-0 transition-all duration-300"></div>
+                        </div>
+
+                        <div class="border-t border-slate-800/80 pt-2 space-y-2">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Potensi Keuntungan (TP1):</span>
+                                <span id="resRewardTP1" class="font-bold text-emerald-400">$0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Nisbah Risk-to-Reward (TP1):</span>
+                                <span id="resRrTP1" class="font-bold text-amber-300">1 : 0.0</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Potensi Keuntungan (TP2):</span>
+                                <span id="resRewardTP2" class="font-bold text-emerald-400">$0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Nisbah Risk-to-Reward (TP2):</span>
+                                <span id="resRrTP2" class="font-bold text-amber-300">1 : 0.0</span>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-800/80 pt-2">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Jumlah Kontrak (Ounces):</span>
+                                <span id="resOunces" class="font-mono text-slate-200">0.00 oz</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="riskWarningBox" class="mt-4 p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400 leading-snug">
+                    <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Risiko modal adalah terkawal (< 1%). Sentiasa patuhi rancangan asal anda.
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Key Support & Resistance Table -->
+        <div class="fx-card p-4 sm:p-5">
+            <h2 class="text-base font-extrabold text-slate-100 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-bullseye text-amber-400"></i> Paras Zon Utama Institusi (Sokongan & Rintangan Swing 3-Candle)
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-400">
+                            <th class="py-2 px-3">Jenis Paras</th>
+                            <th class="py-2 px-3">Harga (USD/oz)</th>
+                            <th class="py-2 px-3">Jarak dari Harga Semasa</th>
+                            <th class="py-2 px-3">Kaedah Penentuan</th>
+                            <th class="py-2 px-3">Status Isyarat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblZonesBody" class="divide-y divide-slate-800/60 text-slate-300">
+                        <tr>
+                            <td colspan="5" class="py-4 text-center text-slate-500">Menunggu data carta dimuatkan...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Collapsible Configuration & API Settings Panel -->
+        <div class="fx-card p-4 sm:p-5">
+            <details class="group">
+                <summary class="flex justify-between items-center font-bold text-sm text-slate-200 cursor-pointer select-none">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-amber-400"></i> Konfigurasi Data API Twelve Data & Pelayan
+                    </span>
+                    <span class="text-slate-500 group-open:rotate-180 transition-transform">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </span>
+                </summary>
+
+                <div class="mt-4 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-400 block mb-1">Twelve Data API Key (Opsional)</label>
+                        <input id="cfgApiKey" type="password" placeholder="Masukkan API Key percuma / berbayar anda" class="w-full rounded-xl px-3 py-2 text-xs font-mono">
+                        <p class="text-[11px] text-slate-500 mt-1">
+                            Jika ruangan ini dibiarkan kosong, sistem secara automatik akan beroperasi dalam **Belum disambung Realistik V5** berasaskan volatiliti pasaran Emas terkini. Kunci anda disimpan hanya dalam browser ini.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-slate-400 block mb-1">Selang Kemas Kini Auto</label>
+                        <select id="cfgAutoRefresh" class="w-full rounded-xl px-3 py-2 text-xs font-semibold">
+                            <option value="0">Manual (Tekan Butang Kemas Kini)</option>
+                            <option value="60000">Setiap 1 Minit</option>
+                            <option value="300000">Setiap 5 Minit (Disyorkan)</option>
+                            <option value="900000">Setiap 15 Minit</option>
+                        </select>
+                        <p class="text-[11px] text-slate-500 mt-1">
+                            Pilihan selang kemas kini membantu mengelakkan melebihi had kuota panggilan API Twelve Data percuma (8 panggilan/minit).
+                        </p>
+                    </div>
+
+                    <div class="md:col-span-2 flex flex-wrap gap-2 pt-2">
+                        <button id="btnSaveConfig" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition">
+                            Simpan Tetapan Pada Browser Ini
+                        </button>
+                        <button id="btnClearConfig" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-4 py-2 rounded-lg transition">
+                            Padam API Key
+                        </button>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+    </main>
+
+    <!-- Footer & Financial Disclaimer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-4 px-4 mt-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                <p><strong>Penafian Risiko:</strong> Alat simulasi dan latihan analisis teknikal sahaja. Bukan nasihat pelaburan kewangan. Pasaran XAU/USD berisiko tinggi.</p>
+            </div>
+            <div class="text-right text-[11px]">
+                Gold Analysis V5.1 • Enjin Carta Lightweight Charts™ 4.2 • Masa candle: UTC+8 • <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts™</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightweight Charts 4.2 CDN Integration -->
+    <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+
+    <!-- App Engine Logic Core -->
+    <script>
+        'use strict';
+
+        /**
+         * Global State Management V5.1
+         */
+        const AppState = {
+            apiKey: localStorage.getItem('v5_gold_key') || '',
+            autoRefreshMs: parseInt(localStorage.getItem('v5_gold_refresh') || '0', 10),
+            activeTimeframe: '15min',
+            showEma: true,
+            marketData: {
+                '1day': [],
+                '1h': [],
+                '15min': [],
+                '5min': []
+            },
+            tfStructures: {},
+            pivotLevels: { res: [], sup: [] },
+            activePlan: null,
+            timer: null,
+            chartObj: null,
+            candlestickSeries: null,
+            ema20Series: null,
+            ema50Series: null,
+            priceLines: [],
+            isBusy: false,
+            isSimulationMode: false
+        };
+
+        // Utility Helpers
+        const $ = id => document.getElementById(id);
+        const formatUSD = num => Number.isFinite(num) ? num.toFixed(2) : 'Tiada data';
+
+        /**
+         * Mathematical & Indicator Calculations Core
+         */
+        const TechnicalEngine = {
+            // Exponential Moving Average (EMA)
+            calculateEMA(data, period) {
+                if (!data || data.length < period) return [];
+                const k = 2 / (period + 1);
+                let ema = data[0].close;
+                const results = [{ time: data[0].time, value: ema }];
+
+                for (let i = 1; i < data.length; i++) {
+                    ema = (data[i].close * k) + (ema * (1 - k));
+                    results.push({ time: data[i].time, value: ema });
+                }
+                return results;
+            },
+
+            // Relative Strength Index (RSI 14)
+            calculateRSI(data, period = 14) {
+                if (!data || data.length <= period) return 50;
+                let gains = 0, losses = 0;
+
+                for (let i = 1; i <= period; i++) {
+                    const diff = data[i].close - data[i - 1].close;
+                    if (diff >= 0) gains += diff;
+                    else losses -= diff;
+                }
+
+                let avgGain = gains / period;
+                let avgLoss = losses / period;
+
+                for (let i = period + 1; i < data.length; i++) {
+                    const diff = data[i].close - data[i - 1].close;
+                    avgGain = ((avgGain * (period - 1)) + (diff >= 0 ? diff : 0)) / period;
+                    avgLoss = ((avgLoss * (period - 1)) + (diff < 0 ? -diff : 0)) / period;
+                }
+
+                if (avgLoss === 0) return avgGain===0?50:100;
+                const rs = avgGain / avgLoss;
+                return 100 - (100 / (1 + rs));
+            },
+
+            // Average True Range (ATR 14)
+            calculateATR(data, period = 14) {
+                if (!data || data.length <= period) return NaN;
+                let trSum = 0;
+                for(let i=data.length-period;i<data.length;i++){const c=data[i],prev=data[i-1].close;trSum+=Math.max(c.high-c.low,Math.abs(c.high-prev),Math.abs(c.low-prev));}
+                return trSum / period;
+            },
+
+            // 3-Candle Fractal Swing Highs & Lows Engine
+            findFractalPivots(candles) {
+                const highs = [];
+                const lows = [];
+
+                if (!candles || candles.length < 7) return { highs, lows };
+
+                for (let i = 3; i < candles.length - 3; i++) {
+                    const current = candles[i];
+                    
+                    // High Fractal Check
+                    const isHigh = candles[i-3].high < current.high &&
+                                   candles[i-2].high < current.high &&
+                                   candles[i-1].high < current.high &&
+                                   candles[i+1].high < current.high &&
+                                   candles[i+2].high < current.high &&
+                                   candles[i+3].high < current.high;
+
+                    // Low Fractal Check
+                    const isLow = candles[i-3].low > current.low &&
+                                  candles[i-2].low > current.low &&
+                                  candles[i-1].low > current.low &&
+                                  candles[i+1].low > current.low &&
+                                  candles[i+2].low > current.low &&
+                                  candles[i+3].low > current.low;
+
+                    if (isHigh) highs.push(current.high);
+                    if (isLow) lows.push(current.low);
+                }
+
+                return { highs, lows };
+            },
+
+            // Timeframe Trend Evaluator
+            evaluateStructure(candles) {
+                if (!candles || candles.length < 50) {
+                    return { last: 0, trend: 'TIADA DATA', ema20: 0, ema50: 0, rsi: 50 };
+                }
+
+                const lastClose = candles[candles.length - 1].close;
+                const ema20Arr = this.calculateEMA(candles, 20);
+                const ema50Arr = this.calculateEMA(candles, 50);
+
+                const ema20 = ema20Arr[ema20Arr.length - 1].value;
+                const ema50 = ema50Arr[ema50Arr.length - 1].value;
+                const rsi = this.calculateRSI(candles, 14);
+
+                let trend = 'BEKECUALI';
+                if (lastClose > ema20 && ema20 > ema50 && rsi > 48) {
+                    trend = 'BULLISH';
+                } else if (lastClose < ema20 && ema20 < ema50 && rsi < 52) {
+                    trend = 'BEARISH';
+                }
+
+                return { last: lastClose, trend, ema20, ema50, rsi };
+            }
+        };
+
+        /**
+         * Realistic Market Data Generator (Fallback when no API Key)
+         */
+        async function fetchTimeframeCandles(interval) {
+            if(!AppState.apiKey) throw Error('Masukkan API key. Data rawak tidak digunakan.');
+            const seconds={'1day':86400,'1h':3600,'15min':900,'5min':300}[interval];
+            const url='https://api.twelvedata.com/time_series?'+new URLSearchParams({symbol:'XAU/USD',interval,outputsize:'200',apikey:AppState.apiKey,format:'JSON',timezone:'UTC'});
+            const resp=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(20000)});if(!resp.ok)throw Error('HTTP '+resp.status);
+            const d=await resp.json();if(!Array.isArray(d.values)||d.status==='error')throw Error(d.message||'Data API tidak sah');
+            const rows=d.values.map(x=>({time:Date.parse(x.datetime.replace(' ','T')+(x.datetime.includes(' ')?'Z':'T00:00:00Z'))/1000,open:+x.open,high:+x.high,low:+x.low,close:+x.close})).filter(x=>Number.isFinite(x.time)&&[x.open,x.high,x.low,x.close].every(v=>Number.isFinite(v)&&v>0)&&x.high>=Math.max(x.open,x.close)&&x.low<=Math.min(x.open,x.close)&&x.high>=x.low).sort((a,b)=>a.time-b.time).filter((x,i,a)=>!i||x.time!==a[i-1].time);
+            const closed=rows.filter(x=>(x.time+seconds)*1000<=Date.now());if(closed.length<60)throw Error('Candle tertutup '+interval+' tidak mencukupi');
+            const age=Date.now()-(closed.at(-1).time+seconds)*1000;if(age>seconds*2000)throw Error('Data '+interval+' terlalu lama / pasaran mungkin tutup');return closed;
+        }
+
+        /**
+         * UI Render Engine
+         */
+        function updateSessionsAndMacroUI() {
+            const now = new Date();
+            const utcHour = now.getUTCHours();
+
+            // Anggaran jam sesi, laras DST London/NY dan hujung minggu
+            const weekend=[0,6].includes(now.getUTCDay());
+            const londonHour=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',hourCycle:'h23'}).format(now));
+            const nyHour=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'America/New_York',hour:'2-digit',hourCycle:'h23'}).format(now));
+            // Tokyo: 00:00 - 09:00 UTC
+            const isTokyo = !weekend && utcHour >= 0 && utcHour < 9;
+            // London: 08:00 - 16:00 UTC
+            const isLondon = !weekend && londonHour >= 8 && londonHour < 17;
+            // NY: 13:00 - 21:00 UTC
+            const isNY = !weekend && nyHour >= 8 && nyHour < 17;
+
+            const setSess = (elId, active) => {
+                const el = $(elId);
+                const txt = el.querySelector('.status-text');
+                if (active) {
+                    el.className = "bg-amber-500/10 p-1.5 rounded border border-amber-500/40";
+                    txt.textContent = "Aktif";
+                    txt.className = "status-text text-xs font-bold text-amber-400";
+                } else {
+                    el.className = "bg-slate-950/60 p-1.5 rounded border border-slate-800";
+                    txt.textContent = "Tutup";
+                    txt.className = "status-text text-xs font-bold text-slate-500";
+                }
+            };
+
+            setSess('sessTokyo', isTokyo);
+            setSess('sessLondon', isLondon);
+            setSess('sessNY', isNY);
+
+            const badge = $('activeSessionBadge');
+            if (isLondon && isNY) {
+                badge.textContent = "OVERLAP LONDON/NY (VOLATILITI TINGGI)";
+                badge.className = "text-[10px] bg-rose-500/20 text-rose-400 font-bold px-2 py-0.5 rounded border border-rose-500/30";
+            } else if (isLondon) {
+                badge.textContent = "SESI LONDON";
+            } else if (isNY) {
+                badge.textContent = "SESI NEW YORK";
+            } else if (isTokyo) {
+                badge.textContent = "SESI ASIA";
+            } else {
+                badge.textContent = "PASARAN PERLAHAN";
+            }
+        }
+
+        function updateTimeframeMatrixUI() {
+            const tfs = ['D1', 'H1', 'M15', 'M5'];
+            const keys = { D1: '1day', H1: '1h', M15: '15min', M5: '5min' };
+
+            let bullCount = 0;
+            let bearCount = 0;
+
+            tfs.forEach(tf => {
+                const data = AppState.tfStructures[keys[tf]];
+                if (!data) return;
+
+                $(`tfTrend${tf}`).textContent = data.trend;
+                $(`tfEma${tf}`).textContent = `${formatUSD(data.ema20)} / ${formatUSD(data.ema50)}`;
+                $(`tfRsi${tf}`).textContent = data.rsi.toFixed(1);
+
+                const badge = $(`tfBadge${tf}`);
+                if (data.trend === 'BULLISH') {
+                    bullCount++;
+                    badge.textContent = 'BUY BIAS';
+                    badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+                    $(`tfTrend${tf}`).className = 'text-sm font-black text-emerald-400';
+                } else if (data.trend === 'BEARISH') {
+                    bearCount++;
+                    badge.textContent = 'SELL BIAS';
+                    badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30';
+                    $(`tfTrend${tf}`).className = 'text-sm font-black text-rose-400';
+                } else {
+                    badge.textContent = 'NEUTRAL';
+                    badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400';
+                    $(`tfTrend${tf}`).className = 'text-sm font-black text-amber-400';
+                }
+            });
+
+            // Master Signal Synthesis Logic
+            const mainBadge = $('mainSignalBadge');
+            const expText = $('signalExplanationText');
+
+            const m15Rsi = AppState.tfStructures['15min']?.rsi || 50;
+            const d1Trend = AppState.tfStructures['1day']?.trend;
+
+            if (bullCount >= 3 && m15Rsi < 70) {
+                mainBadge.textContent = 'BIAS BULLISH — TUNGGU SETUP';
+                mainBadge.className = 'text-base sm:text-lg font-black px-4 py-1 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-lg shadow-emerald-500/10';
+                expText.textContent = `Ketiga-tiga atau ke semua timeframe utama (D1, H1, M15, M5) menunjukkan penyelarasan EMA Bullish dengan RSI (${m15Rsi.toFixed(1)}) tidak berada dalam zon Overbought. Cari setup Retest/Pullback di zon Support terdekat.`;
+            } else if (bearCount >= 3 && m15Rsi > 30) {
+                mainBadge.textContent = 'BIAS BEARISH — TUNGGU SETUP';
+                mainBadge.className = 'text-base sm:text-lg font-black px-4 py-1 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40 shadow-lg shadow-rose-500/10';
+                expText.textContent = `Ketiga-tiga atau ke semua timeframe utama menunjukkan penembusan Bearish. RSI (${m15Rsi.toFixed(1)}) mengesahkan momentum penurunan. Tunggu peluang Rejection di zon Resistance terdekat.`;
+            } else {
+                mainBadge.textContent = 'WAIT / PASARAN NEUTRAL (TIADA CLEAR SETUP)';
+                mainBadge.className = 'text-base sm:text-lg font-black px-4 py-1 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30';
+                expText.textContent = `Arah aliran pasaran berbelah bahagi antara timeframe (D1: ${d1Trend}). Dinasihatkan menunggu penembusan zon rintangan/sokongan utama sebelum mengambil sebarang risiko dagangan.`;
+            }
+        }
+
+        function updatePivotChipsAndTable(currentPrice) {
+            const h1Candles = AppState.marketData['1h'];
+            if (!h1Candles || h1Candles.length === 0) return;
+
+            const { highs, lows } = TechnicalEngine.findFractalPivots(h1Candles);
+
+            // Filter unique sorted levels
+            const res = [...new Set(highs)].filter(x => x > currentPrice).sort((a, b) => a - b);
+            const sup = [...new Set(lows)].filter(x => x < currentPrice).sort((a, b) => b - a);
+
+            const r1 = res[0];
+            const r2 = res[1];
+            const s1 = sup[0];
+            const s2 = sup[1];
+
+            AppState.pivotLevels = { res: [r1, r2].filter(Number.isFinite), sup: [s1, s2].filter(Number.isFinite) };
+
+            // Psychological Levels (.00 & .50)
+            const psych00 = Math.round(currentPrice);
+            const psych50 = Math.floor(currentPrice) + 0.50;
+
+            $('chipR1').textContent = formatUSD(r1);
+            $('chipR2').textContent = formatUSD(r2);
+            $('chipS1').textContent = formatUSD(s1);
+            $('chipS2').textContent = formatUSD(s2);
+            $('chipPsych00').textContent = formatUSD(psych00);
+            $('chipPsych50').textContent = formatUSD(psych50);
+
+            // Populate Table
+            const rows = [
+                { type: 'Rintangan 2 (R2)', price: r2, method: 'Pivot 7 candle High H1', signal: 'Zon Take Profit / Rejection' },
+                { type: 'Rintangan 1 (R1)', typeClass: 'text-rose-400 font-bold', price: r1, method: 'Pivot 7 candle High H1', signal: 'Zon Breakout / Rejection' },
+                { type: 'Paras nombor bulat', price: psych00, method: 'Round Number (.00)', signal: 'Nombor bulat; bukan data order bank' },
+                { type: 'Sokongan 1 (S1)', typeClass: 'text-emerald-400 font-bold', price: s1, method: 'Pivot 7 candle Low H1', signal: 'Zon Key Support / Bounce' },
+                { type: 'Sokongan 2 (S2)', price: s2, method: 'Pivot 7 candle Low H1', signal: 'Zon Stop Loss / Major Pivot' }
+            ];
+
+            $('tblZonesBody').innerHTML = rows.map(r => {
+                const diff = (r.price - currentPrice).toFixed(2);
+                const diffText = !Number.isFinite(r.price)?'Tiada pivot':diff > 0 ? `+${diff} USD` : `${diff} USD`;
+                return `
+                    <tr class="hover:bg-slate-900/40 transition">
+                        <td class="py-2.5 px-3 font-semibold ${r.typeClass || ''}">${r.type}</td>
+                        <td class="py-2.5 px-3 font-mono font-bold">${formatUSD(r.price)}</td>
+                        <td class="py-2.5 px-3 font-mono text-slate-400">${diffText}</td>
+                        <td class="py-2.5 px-3 text-slate-400">${r.method}</td>
+                        <td class="py-2.5 px-3"><span class="bg-slate-800 text-slate-300 text-[10px] font-semibold px-2 py-0.5 rounded border border-slate-700">${r.signal}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        /**
+         * Interactive Chart Component Setup (Lightweight Charts 4.2)
+         */
+        function initInteractiveChart() {
+            if(!window.LightweightCharts){$('signalExplanationText').textContent='Pustaka graf gagal dimuatkan. Semak internet dan refresh.';return;}
+            const container = $('mainChartDiv');
+            container.innerHTML = '';
+
+            const chart = LightweightCharts.createChart(container, {
+                autoSize: true,
+                localization:{timeFormatter:t=>new Date(t*1000).toLocaleString('en-GB',{timeZone:'Asia/Kuala_Lumpur',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})},
+                layout: {
+                    background: { type: 'solid', color: '#09111e' },
+                    textColor: '#94a3b8',
+                    fontFamily: 'Inter, sans-serif'
+                },
+                grid: {
+                    vertLines: { color: 'rgba(31, 45, 69, 0.4)' },
+                    horzLines: { color: 'rgba(31, 45, 69, 0.4)' }
+                },
+                rightPriceScale: {
+                    borderColor: '#1f2d45',
+                    scaleMargins: { top: 0.1, bottom: 0.1 }
+                },
+                timeScale: {
+                    borderColor: '#1f2d45',
+                    timeVisible: true,
+                    secondsVisible: false
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal
+                }
+            });
+
+            const candlestickSeries = chart.addCandlestickSeries({
+                upColor: '#48d4a4',
+                downColor: '#ff7c87',
+                borderVisible: false,
+                wickUpColor: '#48d4a4',
+                wickDownColor: '#ff7c87'
+            });
+
+            const ema20Series = chart.addLineSeries({
+                color: '#f5c66b',
+                lineWidth: 1,
+                priceLineVisible: false,
+                title: 'EMA 20'
+            });
+
+            const ema50Series = chart.addLineSeries({
+                color: '#60a5fa',
+                lineWidth: 1,
+                priceLineVisible: false,
+                title: 'EMA 50'
+            });
+
+            // Crosshair move handler
+            chart.subscribeCrosshairMove(param => {
+                if (!param.time || !param.seriesData) return;
+                const data = param.seriesData.get(candlestickSeries);
+                if (data) {
+                    $('ohlcO').textContent = formatUSD(data.open);
+                    $('ohlcH').textContent = formatUSD(data.high);
+                    $('ohlcL').textContent = formatUSD(data.low);
+                    $('ohlcC').textContent = formatUSD(data.close);
+                }
+            });
+
+            AppState.chartObj = chart;
+            AppState.candlestickSeries = candlestickSeries;
+            AppState.ema20Series = ema20Series;
+            AppState.ema50Series = ema50Series;
+        }
+
+        function updateChartVisuals() {
+            if (!AppState.chartObj) return;
+
+            const candles = AppState.marketData[AppState.activeTimeframe];
+            if (!candles || candles.length === 0) return;
+
+            AppState.candlestickSeries.setData(candles);
+
+            if (AppState.showEma) {
+                const ema20 = TechnicalEngine.calculateEMA(candles, 20);
+                const ema50 = TechnicalEngine.calculateEMA(candles, 50);
+                AppState.ema20Series.setData(ema20);
+                AppState.ema50Series.setData(ema50);
+            } else {
+                AppState.ema20Series.setData([]);
+                AppState.ema50Series.setData([]);
+            }
+
+            // Remove existing plan price lines
+            AppState.priceLines.forEach(line => AppState.candlestickSeries.removePriceLine(line));
+            AppState.priceLines = [];
+
+            for (const [prefix,values,color] of [['R',AppState.pivotLevels.res,'#ff7c87'],['S',AppState.pivotLevels.sup,'#48d4a4']]) values.forEach((price,i)=>AppState.priceLines.push(AppState.candlestickSeries.createPriceLine({price,color,lineWidth:1,lineStyle:i?2:0,axisLabelVisible:true,title:prefix+(i+1)})));
+            // Draw Trade Plan Lines if calculated
+            if (AppState.activePlan) {
+                const p = AppState.activePlan;
+                const lines = [
+                    { price: p.entry, color: '#f5c66b', title: `ENTRY: ${formatUSD(p.entry)}` },
+                    { price: p.sl, color: '#ff7c87', title: `SL: ${formatUSD(p.sl)}` },
+                    { price: p.tp1, color: '#48d4a4', title: `TP1: ${formatUSD(p.tp1)}` },
+                    { price: p.tp2, color: '#34d399', title: `TP2: ${formatUSD(p.tp2)}` }
+                ];
+
+                lines.forEach(l => {
+                    const lineObj = AppState.candlestickSeries.createPriceLine({
+                        price: l.price,
+                        color: l.color,
+                        lineWidth: 1,
+                        lineStyle: LightweightCharts.LineStyle.Dashed,
+                        axisLabelVisible: true,
+                        title: l.title
+                    });
+                    AppState.priceLines.push(lineObj);
+                });
+            }
+
+            if (AppState.needsFit) { AppState.chartObj.timeScale().fitContent(); AppState.needsFit=false; }
+        }
+
+        /**
+         * Risk Calculator Logic
+         */
+        function calculateRiskAndPlan() {
+            const side = $('simSide').value;
+            const entry = parseFloat($('simEntry').value);
+            const sl = parseFloat($('simSL').value);
+            const tp1 = parseFloat($('simTP1').value);
+            const tp2 = parseFloat($('simTP2').value);
+            const capital = parseFloat($('simCapital').value);
+            const volume = parseFloat($('simVolume').value);
+            const volUnit = $('simVolUnit').value;
+            const spread = Number($('simSpread').value); if(!Number.isFinite(spread)||spread<0){alert('Kos tambahan mesti sifar atau positif.');return;} const contract=Number($('simContract').value);if(!Number.isFinite(contract)||contract<=0){alert('Sahkan oz bagi 1 lot dengan broker.');return;}
+
+            if (![entry, sl, tp1, tp2, capital, volume].every(v => Number.isFinite(v) && v > 0)) {
+                alert('Sila isi semua ruangan harga entry, SL, TP, modal dan saiz posisi dengan angka positif.');
+                return;
+            }
+
+            // Validation for direction logic
+            if (side === 'buy' && !(sl < entry && entry < tp1 && tp1 < tp2)) {
+                alert('Untuk posisi BUY: Syarat angka mestilah SL < Entry < TP1 < TP2.');
+                return;
+            }
+            if (side === 'sell' && !(sl > entry && entry > tp1 && tp1 > tp2)) {
+                alert('Untuk posisi SELL: Syarat angka mestilah SL > Entry > TP1 > TP2.');
+                return;
+            }
+
+            // Calculate exact contract size in Ounces (1 Lot = 100 oz)
+            const ounces = volUnit === 'lot' ? volume * contract : volume;
+
+            // Account for Broker Spread in Risk Distance
+            const slDistance = Math.abs(entry - sl) + spread;
+            const tp1Distance = Math.abs(tp1 - entry) - spread;
+            const tp2Distance = Math.abs(tp2 - entry) - spread;
+
+            const totalRiskUsd = slDistance * ounces;
+            const rewardTP1Usd = Math.max(0, tp1Distance * ounces);
+            const rewardTP2Usd = Math.max(0, tp2Distance * ounces);
+
+            const riskPct = (totalRiskUsd / capital) * 100;
+            const rr1 = (rewardTP1Usd / totalRiskUsd).toFixed(2);
+            const rr2 = (rewardTP2Usd / totalRiskUsd).toFixed(2);
+
+            // Render Results UI
+            $('resRiskUsd').textContent = `$${totalRiskUsd.toFixed(2)}`;
+            $('resRiskPct').textContent = `${riskPct.toFixed(2)}%`;
+            $('resRewardTP1').textContent = `$${rewardTP1Usd.toFixed(2)}`;
+            $('resRewardTP2').textContent = `$${rewardTP2Usd.toFixed(2)}`;
+            $('resRrTP1').textContent = `1 : ${rr1}`;
+            $('resRrTP2').textContent = `1 : ${rr2}`;
+            $('resOunces').textContent = `${ounces.toFixed(2)} oz (${volume} ${volUnit.toUpperCase()})`;
+
+            // Risk Bar & Alert Warning
+            const pBar = $('riskProgressBar');
+            const pBadge = $('riskBadge');
+            const pWarn = $('riskWarningBox');
+
+            pBar.style.width = `${Math.min(100, riskPct * 20)}%`;
+
+            if (riskPct > 3.0) {
+                pBar.className = "bg-rose-500 h-full transition-all duration-300";
+                pBadge.textContent = "RISIKO SANGAT TINGGI";
+                pBadge.className = "text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/40 px-2 py-0.5 rounded font-bold";
+                pWarn.className = "mt-4 p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/30 text-[11px] text-rose-300 leading-snug";
+                pWarn.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-400 mr-1"></i> <strong>AMARAN:</strong> Risiko posisi (${riskPct.toFixed(2)}%) melebihi 3% modal! Ini berisiko tinggi menyebabkan kehabisan margin akaun.`;
+            } else if (riskPct > 1.5) {
+                pBar.className = "bg-amber-400 h-full transition-all duration-300";
+                pBadge.textContent = "RISIKO SEDERHANA";
+                pBadge.className = "text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded font-bold";
+                pWarn.className = "mt-4 p-2.5 rounded-lg bg-amber-950/40 border border-amber-500/30 text-[11px] text-amber-300 leading-snug";
+                pWarn.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400 mr-1"></i> Risiko posisi berukuran sederhana (${riskPct.toFixed(2)}%). Pastikan nisbah RR sekurang-kurangnya 1:1.5.`;
+            } else {
+                pBar.className = "bg-emerald-400 h-full transition-all duration-300";
+                pBadge.textContent = "RISIKO TERKAWAL";
+                pBadge.className = "text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-bold";
+                pWarn.className = "mt-4 p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400 leading-snug";
+                pWarn.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Anggaran risiko di bawah atau sama dengan 1.5%. Ini bukan jaminan keselamatan atau keuntungan.`;
+            }
+
+            // Save active plan to render lines on chart
+            AppState.activePlan = { entry, sl, tp1, tp2 };
+            updateChartVisuals();
+        }
+
+        function autoFillPlanFromPivots() {
+            const currentPrice = AppState.tfStructures['15min']?.last;
+            if (!currentPrice) return;
+
+            if(!AppState.validUntil||Date.now()>AppState.validUntil||AppState.isBusy){alert('Muatkan data API yang sah dahulu.');return;}
+            const side = $('simSide').value;
+            const atr = TechnicalEngine.calculateATR(AppState.marketData['15min'], 14);
+            const atrMultiplier = Number($('simAtrBuffer').value);if(!Number.isFinite(atrMultiplier)||atrMultiplier<0){alert('ATR multiplier mesti sifar atau positif.');return;}
+            const buffer = atr * atrMultiplier;
+
+            const { res, sup } = AppState.pivotLevels;
+
+            if (res.length<2 || sup.length<2) {alert('Pivot sebenar belum mencukupi untuk SL dan dua TP. Tiada paras gantian digunakan.');return;}
+
+            $('simEntry').value = currentPrice.toFixed(2);
+
+            if (side === 'buy') {
+                const slPrice = sup[0] - buffer;
+                $('simSL').value = slPrice.toFixed(2);
+                $('simTP1').value = res[0].toFixed(2);
+                $('simTP2').value = res[1].toFixed(2);
+            } else {
+                const slPrice = res[0] + buffer;
+                $('simSL').value = slPrice.toFixed(2);
+                $('simTP1').value = sup[0].toFixed(2);
+                $('simTP2').value = sup[1].toFixed(2);
+            }
+
+            calculateRiskAndPlan();
+        }
+
+        /**
+         * Main Data Engine Fetch & Refresh Loop
+         */
+        async function refreshAllMarketData() {
+            if (AppState.isBusy) return;
+            AppState.isBusy = true;AppState.validUntil=0;invalidatePlan();
+
+            $('btnRefresh').disabled = true;
+            $('btnRefresh').querySelector('span').textContent = 'Memuatkan...';
+            $('apiStatusText').textContent = 'Mengemas kini...';
+
+            try {
+                const intervals = ['1day', '1h', '15min', '5min'];
+                const results = await Promise.all(intervals.map(tf => fetchTimeframeCandles(tf)));
+
+                intervals.forEach((tf, idx) => {
+                    AppState.marketData[tf] = results[idx];
+                    AppState.tfStructures[tf] = TechnicalEngine.evaluateStructure(results[idx]);
+                });
+
+                const m15Data = AppState.marketData['15min'];
+                const lastCandle = m15Data[m15Data.length - 1];
+                const prevCandle = m15Data[m15Data.length - 2];
+
+                const currentPrice = lastCandle.close;
+                const priceDiff = currentPrice - prevCandle.close;
+                const atr14 = TechnicalEngine.calculateATR(m15Data, 14);
+
+                AppState.validUntil=Date.now()+10*60*1000;
+                // Update Header Live Price
+                $('livePrice').textContent = formatUSD(currentPrice);
+                $('priceChange').textContent = `${priceDiff >= 0 ? '+' : ''}${priceDiff.toFixed(2)}`;
+                $('priceChange').className = `text-xs font-bold px-1.5 py-0.5 rounded ${priceDiff >= 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`;
+                $('atrVal').textContent = `${atr14.toFixed(2)} USD`;
+                $('lastUpdatedTime').innerHTML = `<i class="fa-regular fa-clock mr-1"></i> Data Terkini: ${new Date(lastCandle.time*1000).toLocaleString('ms-MY',{timeZone:'Asia/Kuala_Lumpur'})} UTC+8 (candle tertutup)`;
+
+                // Update API Status Dot
+                if (AppState.isSimulationMode) {
+                    $('apiStatusDot').className = 'w-2.5 h-2.5 rounded-full bg-amber-400 pulse-amber';
+                    $('apiStatusText').textContent = 'Belum disambung V5 (Demo)';
+                } else {
+                    $('apiStatusDot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 pulse-green';
+                    $('apiStatusText').textContent = 'Twelve Data • candle tertutup';
+                }
+
+                updateSessionsAndMacroUI();
+                updateTimeframeMatrixUI();
+                updatePivotChipsAndTable(currentPrice);
+                updateChartVisuals();
+
+            } catch (err) {
+                clearMarketState();console.error(err);
+                $('apiStatusText').textContent = 'Ralat API / Sambungan';
+                $('apiStatusDot').className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+                $('signalExplanationText').textContent = `Ralat memuatkan data: ${err.message}. Analisis dan pelan automatik disekat.`;
+            } finally {
+                AppState.isBusy = false;
+                $('btnRefresh').disabled = false;
+                $('btnRefresh').querySelector('span').textContent = 'Kemas Kini Data';
+            }
+        }
+
+        function invalidatePlan(){AppState.activePlan=null;for(const id of ['resRiskUsd','resRiskPct','resRewardTP1','resRewardTP2','resRrTP1','resRrTP2','resOunces'])$(id).textContent='—';$('riskProgressBar').style.width='0%';$('riskBadge').textContent='KIRA SEMULA';$('riskWarningBox').textContent='Nilai berubah / data dikemas kini. Kira semula simulasi.';if(AppState.chartObj)updateChartVisuals();}
+        function clearMarketState(){AppState.validUntil=0;AppState.marketData={'1day':[],'1h':[],'15min':[],'5min':[]};AppState.tfStructures={};AppState.pivotLevels={res:[],sup:[]};AppState.activePlan=null;invalidatePlan();if(AppState.candlestickSeries){AppState.priceLines.forEach(l=>AppState.candlestickSeries.removePriceLine(l));AppState.priceLines=[];AppState.candlestickSeries.setData([]);AppState.ema20Series.setData([]);AppState.ema50Series.setData([])}for(const tf of ['D1','H1','M15','M5'])for(const prefix of ['tfTrend','tfEma','tfRsi','tfBadge'])$(prefix+tf).textContent='—';for(const id of ['livePrice','priceChange','atrVal','chipR1','chipR2','chipS1','chipS2','chipPsych00','chipPsych50'])$(id).textContent='—';$('tblZonesBody').innerHTML='<tr><td colspan="5">Tiada data sah.</td></tr>';$('mainSignalBadge').textContent='WAIT — TIADA DATA SAH';$('lastUpdatedTime').textContent='Sambungan diperlukan';}
+        document.addEventListener('DOMContentLoaded',()=>{for(const id of ['simEntry','simSL','simTP1','simTP2','simCapital','simVolume','simVolUnit','simSpread','simAtrBuffer','simContract'])$(id).addEventListener('input',invalidatePlan)});
+        setInterval(()=>{if(AppState.validUntil&&Date.now()>AppState.validUntil){clearMarketState();$('signalExplanationText').textContent='Data tamat tempoh selepas 10 minit. Tekan Kemas Kini Data.';$('apiStatusText').textContent='Data tamat tempoh';$('apiStatusDot').className='w-2.5 h-2.5 rounded-full bg-amber-400'}},15000);
+
+        /**
+         * Event Listeners & Application Lifecycle
+         */
+        window.onload = function() {
+            AppState.needsFit=true;
+            // Restore settings
+            if (AppState.apiKey) $('cfgApiKey').value = AppState.apiKey;
+            $('cfgAutoRefresh').value = AppState.autoRefreshMs.toString();
+
+            initInteractiveChart();
+            refreshAllMarketData();
+
+            // Auto refresh timer configuration
+            if (AppState.autoRefreshMs > 0) {
+                AppState.timer = setInterval(refreshAllMarketData, AppState.autoRefreshMs);
+            }
+
+            // Button Event Binding
+            $('btnRefresh').onclick = () => refreshAllMarketData();
+            $('btnCalculateRisk').onclick = () => calculateRiskAndPlan();
+            $('btnAutoFillPlan').onclick = () => autoFillPlanFromPivots();
+            $('btnResetChart').onclick = () => AppState.chartObj?.timeScale().fitContent();
+
+            // Timeframe selector buttons
+            document.querySelectorAll('.tf-btn').forEach(btn => {
+                btn.onclick = (e) => {
+                    document.querySelectorAll('.tf-btn').forEach(b => {
+                        b.className = 'tf-btn px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-white transition';
+                    });
+                    e.target.className = 'tf-btn px-2.5 py-1 rounded font-semibold text-slate-950 bg-amber-500 font-bold transition';
+                    AppState.activeTimeframe = e.target.getAttribute('data-tf');AppState.needsFit=true;
+                    updateChartVisuals();
+                };
+            });
+
+            // Checkbox EMA Toggle
+            $('chkEma').onchange = (e) => {
+                AppState.showEma = e.target.checked;
+                updateChartVisuals();
+            };
+
+            // Dynamic recalc when plan side changes
+            $('simSide').onchange = () => {
+                autoFillPlanFromPivots();
+            };
+
+            // Configuration handlers
+            $('btnSaveConfig').onclick = () => {
+                const key = $('cfgApiKey').value.trim();
+                const ref = parseInt($('cfgAutoRefresh').value, 10);
+
+                localStorage.setItem('v5_gold_key', key);
+                localStorage.setItem('v5_gold_refresh', ref.toString());
+                AppState.apiKey = key;
+                AppState.autoRefreshMs = ref;
+
+                if (AppState.timer) clearInterval(AppState.timer);
+                if (ref > 0) AppState.timer = setInterval(refreshAllMarketData, ref);
+
+                alert('Tetapan berjaya disimpan!');
+                refreshAllMarketData();
+            };
+
+            $('btnClearConfig').onclick = () => {
+                localStorage.removeItem('v5_gold_key');
+                $('cfgApiKey').value = '';
+                AppState.apiKey = '';
+                alert('API Key telah dipadam.');
+                refreshAllMarketData();
+            };
+        };
+    </script>
+</body>
+</html>
